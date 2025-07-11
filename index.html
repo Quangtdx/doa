@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu Chuyện Ma Ám</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            cursor: url('data:image/x-icon;base64,AAABAAIAICAAAAAAAADwDwAAFgAAACgAAAAoAAAAEAAAABAAAAAQAAAAAAAQAQAAAAAAAAAEAAAAAAAAAAACAAIAAgAAAAIAAgACAAIAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAEAAAABAAAAAIAAAACAAAAAQAAAAEAAAAAAAAIAAgAAAAAAAACAAAAAgAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'), auto; /* Custom cursor */
+        }
+
+        #intro-screen, #dialogue-screen, #room-screen, #jumpscare-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            transition: opacity 2s ease-in-out;
+        }
+
+        #intro-screen h1 {
+            font-family: 'Creepster', cursive;
+            color: red;
+            font-size: 8em;
+            text-shadow: 0 0 15px red, 0 0 30px darkred;
+            animation: bleed 3s infinite alternate;
+        }
+
+        @keyframes bleed {
+            0% {
+                transform: translateY(0) scaleY(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(10px) scaleY(0.95);
+                opacity: 0.8;
+                text-shadow: 0 0 20px red, 0 0 40px darkred;
+            }
+            100% {
+                transform: translateY(0) scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        #start-button {
+            background-color: darkred;
+            color: white;
+            border: 2px solid red;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-top: 50px;
+            box-shadow: 0 0 10px red;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        #start-button:hover {
+            background-color: red;
+            box-shadow: 0 0 20px red;
+        }
+
+        #dialogue-screen {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            display: none; /* Hidden initially */
+        }
+
+        #dialogue-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid darkred;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            box-shadow: 0 0 15px darkred;
+            text-align: left;
+        }
+
+        #npc-image {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        .dialogue-line {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .speaker {
+            font-weight: bold;
+            color: red;
+        }
+
+        #dialogue-box button {
+            background-color: darkred;
+            color: white;
+            border: 1px solid red;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        #dialogue-box button:hover {
+            background-color: red;
+            border-color: darkred;
+        }
+
+        #room-screen {
+            background-color: black;
+            display: none; /* Hidden initially */
+            filter: brightness(0.6); /* Slightly dim */
+            transition: filter 1s ease-in-out;
+        }
+
+        #room-screen.dimmed {
+            filter: brightness(0.3);
+        }
+
+        #room-text {
+            font-family: 'Metal Mania', cursive;
+            color: red;
+            font-size: 3em;
+            text-shadow: 0 0 10px red;
+            animation: appear 2s forwards;
+            opacity: 0;
+        }
+
+        @keyframes appear {
+            to {
+                opacity: 1;
+            }
+        }
+
+        #room-button {
+            background-color: darkred;
+            color: white;
+            border: 2px solid red;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-top: 50px;
+            box-shadow: 0 0 10px red;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: none; /* Hidden initially */
+        }
+
+        #room-button:hover {
+            background-color: red;
+            box-shadow: 0 0 20px red;
+        }
+
+        #countdown {
+            font-family: 'Creepster', cursive;
+            font-size: 5em;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            display: none;
+        }
+
+        #jumpscare-screen {
+            display: none; /* Hidden initially */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(1); /* Full brightness for jumpscare */
+            animation: flash 0.1s forwards; /* Quick flash */
+            z-index: 99;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        /* White screen effect */
+        .white-screen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease-out;
+            z-index: 50;
+        }
+
+        .fade-to-white .white-screen-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen">
+        <h1>MÁ ÁM</h1>
+        <button id="start-button">BẮT ĐẦU</button>
+    </div>
+
+    <div id="dialogue-screen">
+        <div id="dialogue-box">
+            <img id="npc-image" src="images/spooky_npc.png" alt="NPC đáng sợ">
+            <div id="dialogue-text"></div>
+            <button id="next-dialogue-button">Tiếp theo</button>
+        </div>
+    </div>
+
+    <div id="room-screen">
+        <h2 id="room-text"></h2>
+        <button id="room-button">Ấn vào đây</button>
+    </div>
+
+    <div id="countdown"></div>
+
+    <div id="jumpscare-screen"></div>
+
+    <div class="white-screen-overlay"></div>
+
+    <audio id="background-music" loop>
+        <source src="audio/background_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="scary-music">
+        <source src="audio/scary_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="jumpscare-sound">
+        <source src="audio/jumpscare_sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const introScreen = document.getElementById('intro-screen');
+        const startButton = document.getElementById('start-button');
+        const dialogueScreen = document.getElementById('dialogue-screen');
+        const dialogueBox = document.getElementById('dialogue-box');
+        const dialogueText = document.getElementById('dialogue-text');
+        const nextDialogueButton = document.getElementById('next-dialogue-button');
+        const roomScreen = document.getElementById('room-screen');
+        const roomText = document.getElementById('room-text');
+        const roomButton = document.getElementById('room-button');
+        const countdownElement = document.getElementById('countdown');
+        const jumpscareScreen = document.getElementById('jumpscare-screen');
+        const whiteScreenOverlay = document.querySelector('.white-screen-overlay');
+
+        const backgroundMusic = document.getElementById('background-music');
+        const scaryMusic = document.getElementById('scary-music');
+        const jumpscareSound = document.getElementById('jumpscare-sound');
+
+        let currentDialogueIndex = 0;
+        const dialogues = [
+            { speaker: "NPC", text: "Chào mừng tới câu chuyện ma ám! Bạn đã sẵn sàng tham gia thử thách chưa?" },
+            { speaker: "PLAYER", text: "Đây là đâu và tại sao tôi lại ở đây? Tôi nhớ mình đang ngủ mà?" },
+            { speaker: "NPC", text: "Đây là một phần nhỏ của địa ngục, nơi mà bạn sẽ phải tìm cách sống sót khỏi những hồn ma. Nếu bạn chết thì ngoài đời bạn cũng sẽ chết và linh hồn sẽ ở mãi nơi này." },
+            { speaker: "PLAYER", text: "Tôi không muốn! Tôi không muốn! Hãy mau trả tôi về!" }
+        ];
+
+        startButton.addEventListener('click', startGame);
+
+        async function startGame() {
+            introScreen.style.opacity = 0;
+            // Bắt đầu phát nhạc nền ngay khi nút được nhấn
+            backgroundMusic.play().catch(e => {
+                console.error("Lỗi khi phát nhạc nền:", e);
+                // Nếu không thể phát tự động, có thể hiển thị thông báo yêu cầu người dùng nhấp vào đâu đó để bật âm thanh
+                // Hoặc đơn giản là vẫn tiếp tục luồng game nếu âm thanh không phải là bắt buộc ngay lập tức
+            });
+
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+                // Sau khi màn hình intro biến mất, yêu cầu quyền microphone
+                requestMicrophonePermission();
+            }, 2000);
+        }
+
+        async function requestMicrophonePermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // Nếu quyền được cấp, chuyển sang đoạn hội thoại
+                stream.getTracks().forEach(track => track.stop()); // Dừng stream vì ta chỉ cần quyền
+                startDialogue();
+            } catch (err) {
+                // Nếu quyền bị từ chối hoặc có lỗi, thông báo cho người chơi
+                alert("Bạn cần cấp quyền âm thanh (microphone) để trò chơi diễn ra đầy đủ. Vui lòng thử lại và cho phép quyền nếu được hỏi.");
+                // Hoặc có thể chọn tiếp tục game mà không có chức năng microphone, tùy ý muốn của bạn
+                // Ví dụ: startDialogue(); // Để bỏ qua yêu cầu microphone và tiếp tục
+            }
+        }
+
+        function startDialogue() {
+            dialogueScreen.style.display = 'flex';
+            dialogueScreen.style.opacity = 1; // Đảm bảo màn hình đối thoại hiện ra
+            displayDialogue();
+            nextDialogueButton.addEventListener('click', handleNextDialogue);
+        }
+
+        function displayDialogue() {
+            if (currentDialogueIndex < dialogues.length) {
+                const line = dialogues[currentDialogueIndex];
+                dialogueText.innerHTML = `<span class="speaker">${line.speaker}:</span> ${line.text}`;
+            } else {
+                endDialogue();
+            }
+        }
+
+        function handleNextDialogue() {
+            currentDialogueIndex++;
+            displayDialogue();
+        }
+
+        function endDialogue() {
+            dialogueScreen.style.opacity = 0;
+            whiteScreenOverlay.style.opacity = 1; // Bắt đầu làm trắng màn hình
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+
+            setTimeout(() => {
+                dialogueScreen.style.display = 'none';
+                whiteScreenOverlay.style.opacity = 0; // Làm mờ lớp trắng
+                setTimeout(() => {
+                    whiteScreenOverlay.style.display = 'none';
+                    enterRoom();
+                }, 2000); // Đợi lớp trắng mờ đi
+            }, 2000); // Thời gian chuyển sang màn hình trắng
+        }
+
+        function enterRoom() {
+            roomScreen.style.display = 'flex';
+            roomScreen.style.opacity = 1; // Đảm bảo màn hình phòng hiện ra
+            scaryMusic.play().catch(e => console.error("Lỗi khi phát nhạc kinh dị:", e)); // Phát nhạc kinh dị
+            scaryMusic.addEventListener('ended', showRoomText); // Khi nhạc kinh dị kết thúc, hiện text
+        }
+
+        function showRoomText() {
+            roomText.textContent = "Bạn đã hoàn thành màn chơi vui lòng ấn vào đây";
+            roomButton.style.display = 'block';
+            roomButton.addEventListener('click', startCountdown);
+        }
+
+        function startCountdown() {
+            roomScreen.style.opacity = 0;
+            setTimeout(() => {
+                roomScreen.style.display = 'none';
+                countdownElement.style.display = 'block';
+                let count = 5;
+                countdownElement.textContent = count;
+
+                const countdownInterval = setInterval(() => {
+                    count--;
+                    countdownElement.textContent = count;
+                    if (count === 0) {
+                        clearInterval(countdownInterval);
+                        setTimeout(triggerJumpscare, 500); // Độ trễ nhỏ trước jumpscare
+                    }
+                }, 1000);
+            }, 2000); // Đợi màn hình phòng mờ đi
+        }
+
+        function triggerJumpscare() {
+            countdownElement.style.display = 'none';
+            jumpscareScreen.style.display = 'flex';
+            jumpscareScreen.style.backgroundImage = "url('images/jumpscare_image.png')"; // Đường dẫn ảnh jumpscare
+            jumpscareSound.play().catch(e => console.error("Lỗi khi phát tiếng thét:", e));
+        }
+
+    </script>
+</body>
+</html>
