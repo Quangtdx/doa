@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Câu Chuyện Ma Ám</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
@@ -290,37 +291,19 @@
 
         async function startGame() {
             introScreen.style.opacity = 0;
-            // Bắt đầu phát nhạc nền ngay khi nút được nhấn
             backgroundMusic.play().catch(e => {
                 console.error("Lỗi khi phát nhạc nền:", e);
-                // Nếu không thể phát tự động, có thể hiển thị thông báo yêu cầu người dùng nhấp vào đâu đó để bật âm thanh
-                // Hoặc đơn giản là vẫn tiếp tục luồng game nếu âm thanh không phải là bắt buộc ngay lập tức
             });
 
             setTimeout(() => {
                 introScreen.style.display = 'none';
-                // Sau khi màn hình intro biến mất, yêu cầu quyền microphone
-                requestMicrophonePermission();
-            }, 2000);
-        }
-
-        async function requestMicrophonePermission() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                // Nếu quyền được cấp, chuyển sang đoạn hội thoại
-                stream.getTracks().forEach(track => track.stop()); // Dừng stream vì ta chỉ cần quyền
-                startDialogue();
-            } catch (err) {
-                // Nếu quyền bị từ chối hoặc có lỗi, thông báo cho người chơi
-                alert("Bạn cần cấp quyền âm thanh (microphone) để trò chơi diễn ra đầy đủ. Vui lòng thử lại và cho phép quyền nếu được hỏi.");
-                // Hoặc có thể chọn tiếp tục game mà không có chức năng microphone, tùy ý muốn của bạn
-                // Ví dụ: startDialogue(); // Để bỏ qua yêu cầu microphone và tiếp tục
-            }
+                startDialogue(); 
+            }, 2000); 
         }
 
         function startDialogue() {
             dialogueScreen.style.display = 'flex';
-            dialogueScreen.style.opacity = 1; // Đảm bảo màn hình đối thoại hiện ra
+            dialogueScreen.style.opacity = 1; 
             displayDialogue();
             nextDialogueButton.addEventListener('click', handleNextDialogue);
         }
@@ -341,30 +324,37 @@
 
         function endDialogue() {
             dialogueScreen.style.opacity = 0;
-            whiteScreenOverlay.style.opacity = 1; // Bắt đầu làm trắng màn hình
+            whiteScreenOverlay.style.opacity = 1; 
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
 
             setTimeout(() => {
                 dialogueScreen.style.display = 'none';
-                whiteScreenOverlay.style.opacity = 0; // Làm mờ lớp trắng
+                whiteScreenOverlay.style.opacity = 0; 
                 setTimeout(() => {
                     whiteScreenOverlay.style.display = 'none';
                     enterRoom();
-                }, 2000); // Đợi lớp trắng mờ đi
-            }, 2000); // Thời gian chuyển sang màn hình trắng
+                }, 2000); 
+            }, 2000); 
         }
 
         function enterRoom() {
             roomScreen.style.display = 'flex';
-            roomScreen.style.opacity = 1; // Đảm bảo màn hình phòng hiện ra
-            scaryMusic.play().catch(e => console.error("Lỗi khi phát nhạc kinh dị:", e)); // Phát nhạc kinh dị
-            scaryMusic.addEventListener('ended', showRoomText); // Khi nhạc kinh dị kết thúc, hiện text
+            roomScreen.style.opacity = 1; 
+            scaryMusic.play().catch(e => console.error("Lỗi khi phát nhạc kinh dị:", e)); 
+            
+            // --- THAY ĐỔI Ở ĐÂY ---
+            // Gọi showRoomText() ngay lập tức thay vì đợi nhạc kết thúc
+            showRoomText(); 
+            
+            // Nếu bạn muốn đợi nhạc kết thúc, hãy bỏ bình luận dòng dưới và bình luận dòng trên:
+            // scaryMusic.addEventListener('ended', showRoomText); 
         }
 
         function showRoomText() {
             roomText.textContent = "Bạn đã hoàn thành màn chơi vui lòng ấn vào đây";
-            roomButton.style.display = 'block';
+            roomButton.style.display = 'block'; // Hiển thị nút
+            roomText.style.opacity = 1; // Đảm bảo text hiển thị
             roomButton.addEventListener('click', startCountdown);
         }
 
@@ -381,16 +371,16 @@
                     countdownElement.textContent = count;
                     if (count === 0) {
                         clearInterval(countdownInterval);
-                        setTimeout(triggerJumpscare, 500); // Độ trễ nhỏ trước jumpscare
+                        setTimeout(triggerJumpscare, 500); 
                     }
                 }, 1000);
-            }, 2000); // Đợi màn hình phòng mờ đi
+            }, 2000); 
         }
 
         function triggerJumpscare() {
             countdownElement.style.display = 'none';
             jumpscareScreen.style.display = 'flex';
-            jumpscareScreen.style.backgroundImage = "url('images/jumpscare_image.png')"; // Đường dẫn ảnh jumpscare
+            jumpscareScreen.style.backgroundImage = "url('images/jumpscare_image.png')"; 
             jumpscareSound.play().catch(e => console.error("Lỗi khi phát tiếng thét:", e));
         }
 
