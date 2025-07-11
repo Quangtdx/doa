@@ -228,7 +228,7 @@
 <body>
 
     <div id="intro-screen">
-        <h1>MÁ ÁM</h1>
+        <h1>MA ÁM</h1>
         <button id="start-button">BẮT ĐẦU</button>
     </div>
 
@@ -343,18 +343,15 @@
             roomScreen.style.opacity = 1; 
             scaryMusic.play().catch(e => console.error("Lỗi khi phát nhạc kinh dị:", e)); 
             
-            // --- THAY ĐỔI Ở ĐÂY ---
-            // Gọi showRoomText() ngay lập tức thay vì đợi nhạc kết thúc
             showRoomText(); 
             
-            // Nếu bạn muốn đợi nhạc kết thúc, hãy bỏ bình luận dòng dưới và bình luận dòng trên:
             // scaryMusic.addEventListener('ended', showRoomText); 
         }
 
         function showRoomText() {
             roomText.textContent = "Bạn đã hoàn thành màn chơi vui lòng ấn vào đây";
-            roomButton.style.display = 'block'; // Hiển thị nút
-            roomText.style.opacity = 1; // Đảm bảo text hiển thị
+            roomButton.style.display = 'block'; 
+            roomText.style.opacity = 1; 
             roomButton.addEventListener('click', startCountdown);
         }
 
